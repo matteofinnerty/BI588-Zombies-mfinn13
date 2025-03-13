@@ -1,0 +1,125 @@
+---
+title: "mfinn13_OriginalHomeworkCode_03"
+output: html_document
+date: "2025-03-13"
+---
+
+Loading in the data set
+```{r}
+library(curl)
+file <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/refs/heads/master/AN588_Spring25/zombies.csv")
+zombies <- read.csv(file, header = T, sep = ",")
+```
+
+# Problem 1 
+Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education). NOTE: You will not want to use the built in var() and sd() commands as these are for samples.
+```{r}
+#viewing dataset so I know the variable names
+View(zombies)
+
+#function for calculating population standard deviation
+pop_SD <- function(data) {
+  sqrt(sum((data - mean(data))^2)/(length(data)))
+}
+
+#height
+print(mean(zombies$height))
+print(pop_SD(zombies$height))
+
+#weight
+print(mean(zombies$weight))
+print(pop_SD(zombies$weight))
+
+#age
+print(mean(zombies$age))
+print(pop_SD(zombies$age))
+
+#number of zombies killed
+print(mean(zombies$zombies_killed))
+print(pop_SD(zombies$zombies_killed))
+
+#years of education
+print(mean(zombies$years_of_education))
+print(pop_SD(zombies$years_of_education))
+
+```
+
+# Problem 2
+Use {ggplot} to make boxplots of each of these variables by gender.
+```{r}
+library(ggplot2)
+
+#height
+heightVgender_Box <- ggplot(data = zombies, aes(x = gender, y = height, fill = gender)) + geom_boxplot()
+print(heightVgender_Box)
+
+#weight
+weightVgender_Box <- ggplot(data = zombies, aes(x = gender, y = weight, fill = gender)) + geom_boxplot()
+print(weightVgender_Box)
+
+#age
+ageVgender_Box <- ggplot(data = zombies, aes(x = gender, y = age, fill = gender)) + geom_boxplot()
+print(ageVgender_Box)
+
+#number of zombies killed
+killsVgender_Box <- ggplot(data = zombies, aes(x = gender, y = zombies_killed, fill = gender)) + geom_boxplot()
+print(killsVgender_Box)
+
+#years of education 
+educationVgender_Box <- ggplot(data = zombies, aes(x = gender, y = years_of_education, fill = gender)) + geom_boxplot()
+print(educationVgender_Box)
+```
+
+# Problem 3
+Use {ggplot} to make scatter plots of height and weight in relation to age. Do these variables seem to be related? In what way?
+```{r}
+#height and age relation scatterplot
+heightAge_scatter <- ggplot(data = zombies, aes(x = age, y = height)) + geom_point() + geom_smooth(method = "lm")
+heightAge_scatter
+
+#weight and age relation scatterplot
+weightAge_scatter <- ggplot(data = zombies, aes(x = age, y = weight)) + geom_point() + geom_smooth(method = "lm")
+weightAge_scatter
+
+print("Both height and weight seem to be positively correlated with age, though height seems to have a stronger correlation.")
+
+
+
+```
+
+# Problem 4
+Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+```{r}
+#height
+hist(zombies$height)
+qqnorm(zombies$height)
+qqline(zombies$height, col = "blue")
+print("Based on the histogram and the Q-Q plot, height seems to be normally distributed.")
+
+#weight
+hist(zombies$weight)
+qqnorm(zombies$weight)
+qqline(zombies$weight, col = "blue")
+print("Based on the histogram and the Q-Q plot, weight seems to be normally distributed.")
+
+#age
+hist(zombies$age)
+qqnorm(zombies$age)
+qqline(zombies$age, col = "blue")
+print("Based on the histogram and the Q-Q plot, age seems to be normally distributed.")
+
+#zombie kills
+hist(zombies$zombies_killed)
+qqnorm(zombies$zombies_killed)
+qqline(zombies$zombies_killed, col = "blue")
+print("The histogram is heavily right-skewed, and the Q-Q plot does not fall on the line. Zombies killed is not normally distributed. Because the number of kills is count data which could take on a value between 0 and infinity, this is likely from a poisson distribution.")
+
+#years of education 
+hist(zombies$years_of_education)
+qqnorm(zombies$years_of_education)
+qqline(zombies$years_of_education, col = "blue")
+print("The histogram is right-skewed, and the Q-Q plot does not fall on the line. Years of education is not normally distributed. Because the number of kills is count data which could take on a value between 0 and infinity, this is likely also from a poisson distribution.")
+
+
+```
+
