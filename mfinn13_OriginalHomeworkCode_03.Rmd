@@ -4,7 +4,7 @@ output: html_document
 date: "2025-03-13"
 ---
 
-Loading in the data set
+*Loading in the data set*
 ```{r}
 library(curl)
 file <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/refs/heads/master/AN588_Spring25/zombies.csv")
@@ -123,3 +123,82 @@ print("The histogram is right-skewed, and the Q-Q plot does not fall on the line
 
 ```
 
+# Problem 5
+Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal…
+```{r}
+#First, create a subset of 30 random survivors
+set.seed(1) #so it doesn't change every time
+randomSurvivors_30 <- zombies[sample(nrow(zombies), 30), ] #selects 30 random rows out of the dataset, and chooses those rows (which are each survivors with all of their data)
+randomSurvivors_30
+
+
+#HEIGHT (normal)
+rs30_mean_height <- mean(randomSurvivors_30$height) #calculates mean height
+rs30_sd_height <- sd(randomSurvivors_30$height) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_height <- rs30_sd_height/sqrt(30) #calculates standard error
+qnorm(0.975) #the critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30
+rs30_CIupper_height <- rs30_mean_height + (rs30_se_height*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_height <- rs30_mean_height - (rs30_se_height*qnorm(0.975)) #calculates CI lower limit
+cat("The mean height is",rs30_mean_height,". The standard deviation for height is",rs30_sd_height, ".The standard error for height is",rs30_se_height, ".The 95% confidence interval for the mean of the height is (",rs30_CIlower_height,",", rs30_CIupper_height,").")
+
+#WEIGHT (normal)
+rs30_mean_weight <- mean(randomSurvivors_30$weight)
+rs30_sd_weight <- sd(randomSurvivors_30$weight) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_weight <- rs30_sd_weight/sqrt(30) #calculates standard error
+qnorm(0.975) #thethe critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30
+rs30_CIupper_weight <- rs30_mean_weight + (rs30_se_weight*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_weight <- rs30_mean_weight - (rs30_se_weight*qnorm(0.975)) #calculates CI lower limit
+cat("The mean weight is",rs30_mean_weight,". The standard deviation for weight is",rs30_sd_height, ".The standard error for weight is",rs30_se_weight, ".The 95% confidence interval for the mean of the weight is (",rs30_CIlower_weight,",", rs30_CIupper_weight,").")
+
+#AGE (normal)
+rs30_mean_age <- mean(randomSurvivors_30$age)
+rs30_sd_age <- sd(randomSurvivors_30$age) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_age <- rs30_sd_age/sqrt(30) #calculates standard error
+qnorm(0.975) #the critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30.
+rs30_CIupper_age <- rs30_mean_age + (rs30_se_age*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_age <- rs30_mean_age - (rs30_se_age*qnorm(0.975)) #calculates CI lower limit
+cat("The mean age is",rs30_mean_age,". The standard deviation for age is",rs30_sd_age, ".The standard error for age is",rs30_se_age, ".The 95% confidence interval for the mean of the age is (",rs30_CIlower_age,",", rs30_CIupper_age,").")
+
+
+#ZOMBIE KILLS (non-normal)
+rs30_mean_zombies_killed <- mean(randomSurvivors_30$zombies_killed)
+rs30_sd_zombies_killed <- sd(randomSurvivors_30$zombies_killed) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_zombies_killed <- rs30_sd_zombies_killed/sqrt(30) #calculates standard error
+#because this is not normally distributed, we have to use bootstrapping to estimate a confidence interval
+setOfMeans_kills <- NULL #sets null object which we will full with simulated means
+for (i in 1:10000){
+  setOfMeans_kills[i] <- mean(sample(zombies$zombies_killed, 30, replace = F)) #creates a dataset of 10000 means, each calculated from a random sample of size 30 from our zombies dataset
+}
+rs30_CIlower_kills <- quantile(setOfMeans_kills, 0.025) #tells us the value in the set of means which 2.5% of values are lower (this is our lower bound)
+rs30_CIupper_kills <- quantile(setOfMeans_kills, 0.975) #tell us the value in the set of means which 97.5% of values are lower (this is our upper bound)
+cat("The mean number of kills is",rs30_mean_zombies_killed,". The standard deviation for number of kills is",rs30_sd_zombies_killed, ".The standard error for kills is",rs30_se_zombies_killed, ".The 95% confidence interval for the mean of the number of kills is (",rs30_CIlower_kills,",", rs30_CIupper_kills,").")
+
+
+#YEARS OF EDUCATION (non-normal)
+rs30_mean_years_of_education <- mean(randomSurvivors_30$years_of_education)
+rs30_sd_years_of_education <- sd(randomSurvivors_30$years_of_education) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_years_of_education <- rs30_sd_years_of_education/sqrt(30) #calculates standard error
+#because this is not normally distributed, we have to use bootstrapping to estimate a confidence interval
+setOfMeans_education <- NULL #sets null object which we will full with simulated means
+for (i in 1:10000){
+  setOfMeans_education[i] <- mean(sample(zombies$years_of_education, 30, replace = F)) #creates a dataset of 10000 means, each calculated from a random sample of size 30 from our zombies dataset
+}
+rs30_CIlower_education <- quantile(setOfMeans_education, 0.025) #tells us the value in the set of means which 2.5% of values are lower (this is our lower bound)
+rs30_CIupper_education <- quantile(setOfMeans_education, 0.975) #tell us the value in the set of means which 97.5% of values are lower (this is our upper bound)
+cat("The mean years of education is",rs30_mean_years_of_education,". The standard deviation for years of education is",rs30_sd_years_of_education, ".The standard error for years of education is",rs30_se_years_of_education, ".The 95% confidence interval for the mean of years of education is (",rs30_CIlower_education,",", rs30_CIupper_education,").")
+
+```
+
+# Problem 6
+Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+```{r}
+
+
+
+
+
+```
+# Challenges
+1. printing/concatenating characters with numerics, but i found the cat function!
+1. problem 5, couldn't get the sample function to work properly with the dataset. 
+3. don't fully understand why we would replace when bootstrapping 
