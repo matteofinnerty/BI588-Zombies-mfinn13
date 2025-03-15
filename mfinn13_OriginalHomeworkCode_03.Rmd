@@ -193,7 +193,61 @@ cat("The mean years of education is",rs30_mean_years_of_education,". The standar
 Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
 ```{r}
 
+#HEIGHT
+sampleMeans_height <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_height[i] <- mean(sample(zombies$height, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_height <- mean(sampleMeans_height) #calculates mean
+sd_sampleMeans_height <- sd(sampleMeans_height) #calculates sd
+hist(sampleMeans_height) #histogram for assessing normality visually
+cat("The mean for the distribution of means of height is", mean_sampleMeans_height, ". The sd for the distribution of means of height is", sd_sampleMeans_height,". while the SE from part 5 was",rs30_se_height, ". The distribution of means for height is normally distributed.")
 
+
+#WEIGHT
+sampleMeans_weight <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_weight[i] <- mean(sample(zombies$weight, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_weight <- mean(sampleMeans_weight) #calculates mean
+sd_sampleMeans_weight <- sd(sampleMeans_weight) #calculates sd
+hist(sampleMeans_weight) #histogram for assessing normality visually
+cat("The mean for the distribution of means of weight is", mean_sampleMeans_weight, ". The sd for the distribution of means of weight is", sd_sampleMeans_weight,". while the SE from part 5 was",rs30_se_weight, ". The distribution of means for weight is approximately normally distributed.")
+
+
+#AGE
+sampleMeans_age <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_age[i] <- mean(sample(zombies$age, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_age <- mean(sampleMeans_age) #calculates mean
+sd_sampleMeans_age <- sd(sampleMeans_age) #calculates sd
+hist(sampleMeans_age) #histogram for assessing normality visually
+cat("The mean for the distribution of means of age is", mean_sampleMeans_age, ". The sd for the distribution of means of age is", sd_sampleMeans_age,". while the SE from part 5 was",rs30_se_age, ". The distribution of means for age is approximately normally distributed.")
+
+
+#ZOMBIE KILLS
+sampleMeans_kills <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_kills[i] <- mean(sample(zombies$zombies_killed, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_kills <- mean(sampleMeans_kills) #calculates mean
+sd_sampleMeans_kills <- sd(sampleMeans_kills) #calculates sd
+hist(sampleMeans_kills) #histogram for assessing normality visually
+
+cat("The mean for the distribution of means of zombie kills is", mean_sampleMeans_kills, ". The sd for the distribution of means of zombie kills is", sd_sampleMeans_kills,". while the SE from part 5 was",rs30_se_zombies_killed, ". The distribution of means for zombies killed is approximately normally distributed, even though the original distribution was not normally distributed, demonstrating the central limit theorem.")
+  
+
+#YEARS OF EDUCATION 
+sampleMeans_education <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_education[i] <- mean(sample(zombies$years_of_education, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_education <- mean(sampleMeans_education) #calculates mean
+sd_sampleMeans_education <- sd(sampleMeans_education) #calculates sd
+hist(sampleMeans_education) #histogram for assessing normality visually
+
+cat("The mean for the distribution of means of years of education is", mean_sampleMeans_education, ". The sd for the distribution of means of years of education is", sd_sampleMeans_education,". while the SE from part 5 was",rs30_se_years_of_education, ". The distribution of means for years of education is approximately normally distributed, even though the original distribution was not normally distributed, demonstrating the central limit theorem.")
 
 
 
