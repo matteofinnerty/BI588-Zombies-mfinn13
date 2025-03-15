@@ -253,6 +253,8 @@ cat("The mean for the distribution of means of years of education is", mean_samp
 
 ```
 # Challenges
-1. printing/concatenating characters with numerics, but i found the cat function!
-1. problem 5, couldn't get the sample function to work properly with the dataset. 
-3. don't fully understand why we would replace when bootstrapping 
+1. In problem 5, I initially had trouble getting the sample function to work how I wanted it to. It kept saying that I was trying to take a sample larger than the dataset which didn't make sense. Eventually I figured it out with some online help. 
+2. Throughout the homework, I wanted to print out my answers to the questions after doing all the code to solve the problems, but I was having trouble concatenating strings and numerics and kept getting errors until I found the cat() function. 
+3. This is not exactly a challenge, but I don't fully understand why the module uses replacement when bootstrapping. 
+4. I'm still getting the hang of using for loops. I understand them conceptually but actually writing them can be a bit challenging. 
+5. I'm not sure of the best way of figuring what distribution a dataset fits. For problem 4, for example, knowing that zombie kills was not normal and is data that is counted made me think it was poisson, but I was not so sure for years of education. 
