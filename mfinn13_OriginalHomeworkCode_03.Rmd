@@ -258,3 +258,6 @@ cat("The mean for the distribution of means of years of education is", mean_samp
 3. This is not exactly a challenge, but I don't fully understand why the module uses replacement when bootstrapping. 
 4. I'm still getting the hang of using for loops. I understand them conceptually but actually writing them can be a bit challenging. 
 5. I'm not sure of the best way of figuring what distribution a dataset fits. For problem 4, for example, knowing that zombie kills was not normal and is data that is counted made me think it was poisson, but I was not so sure for years of education. 
+
+# Alexandra Comments
+I also had a hard time with the sample function. I think we used replacement when bootstrapping to make sure that we do not end up doing a permutation, which is what I believe happens when we bootstrap without replacement. Besides what you mentioned in your fifth bullet point, you could maybe use a plot from ggplot or a histogram to physically see the distribution, so you can see what visualization fits best and match the distribution to the dataset. Honestly, I just used trial and error to do mine. 
