@@ -1,0 +1,266 @@
+---
+title: "mfinn13_FinalHomeworkCode_03"
+output: html_document
+date: "2025-05-03"
+---
+
+*Loading in the data set*
+```{r}
+library(curl)
+file <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/refs/heads/master/AN588_Spring25/zombies.csv")
+zombies <- read.csv(file, header = T, sep = ",")
+```
+
+# Problem 1 
+Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education). NOTE: You will not want to use the built in var() and sd() commands as these are for samples.
+```{r}
+#viewing dataset so I know the variable names
+View(zombies)
+
+#function for calculating population standard deviation
+pop_SD <- function(data) {
+  sqrt(sum((data - mean(data))^2)/(length(data)))
+}
+
+#height
+paste("The mean height is ", mean(zombies$height), sep = "")
+paste("Ehe standard deviation for height is ", pop_SD(zombies$height), sep = "")
+
+#weight
+paste("The mean weight is ", mean(zombies$weight), sep = "")
+paste("Ehe standard deviation for weight is ", pop_SD(zombies$weight), sep = "")
+
+#age
+paste("The mean age is ", mean(zombies$age), sep = "")
+paste("Ehe standard deviation for age is ", pop_SD(zombies$age), sep = "")
+
+#number of zombies killed
+paste("The mean zombies killed is ", mean(zombies$zombies_killed), sep = "")
+paste("Ehe standard deviation for zombies killed is ", pop_SD(zombies$zombies_killed), sep = "")
+
+#years of education
+paste("The mean years of education is ", mean(zombies$years_of_education), sep = "")
+paste("Ehe standard deviation for years of education is ", pop_SD(zombies$years_of_education), sep = "")
+
+
+```
+
+# Problem 2
+Use {ggplot} to make boxplots of each of these variables by gender.
+```{r}
+library(ggplot2)
+
+#height
+heightVgender_Box <- ggplot(data = zombies, aes(x = gender, y = height, fill = gender)) + geom_boxplot()
+print(heightVgender_Box)
+
+#weight
+weightVgender_Box <- ggplot(data = zombies, aes(x = gender, y = weight, fill = gender)) + geom_boxplot()
+print(weightVgender_Box)
+
+#age
+ageVgender_Box <- ggplot(data = zombies, aes(x = gender, y = age, fill = gender)) + geom_boxplot()
+print(ageVgender_Box)
+
+#number of zombies killed
+killsVgender_Box <- ggplot(data = zombies, aes(x = gender, y = zombies_killed, fill = gender)) + geom_boxplot()
+print(killsVgender_Box)
+
+#years of education 
+educationVgender_Box <- ggplot(data = zombies, aes(x = gender, y = years_of_education, fill = gender)) + geom_boxplot()
+print(educationVgender_Box)
+```
+
+# Problem 3
+Use {ggplot} to make scatter plots of height and weight in relation to age. Do these variables seem to be related? In what way?
+```{r}
+#height and age relation scatterplot
+heightAge_scatter <- ggplot(data = zombies, aes(x = age, y = height)) + geom_point() + geom_smooth(method = "lm")
+heightAge_scatter
+
+#weight and age relation scatterplot
+weightAge_scatter <- ggplot(data = zombies, aes(x = age, y = weight)) + geom_point() + geom_smooth(method = "lm")
+weightAge_scatter
+
+print("Both height and weight seem to be positively correlated with age, though height seems to have a stronger correlation.")
+
+
+
+```
+
+# Problem 4
+Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+```{r}
+#height
+hist(zombies$height)
+qqnorm(zombies$height)
+qqline(zombies$height, col = "blue")
+print("Based on the histogram and the Q-Q plot, height seems to be normally distributed.")
+
+#weight
+hist(zombies$weight)
+qqnorm(zombies$weight)
+qqline(zombies$weight, col = "blue")
+print("Based on the histogram and the Q-Q plot, weight seems to be normally distributed.")
+
+#age
+hist(zombies$age)
+qqnorm(zombies$age)
+qqline(zombies$age, col = "blue")
+print("Based on the histogram and the Q-Q plot, age seems to be normally distributed.")
+
+#zombie kills
+hist(zombies$zombies_killed)
+qqnorm(zombies$zombies_killed)
+qqline(zombies$zombies_killed, col = "blue")
+print("The histogram is heavily right-skewed, and the Q-Q plot does not fall on the line. Zombies killed is not normally distributed. Because the number of kills is count data which could take on a value between 0 and infinity, this is likely from a poisson distribution.")
+
+#years of education 
+hist(zombies$years_of_education)
+qqnorm(zombies$years_of_education)
+qqline(zombies$years_of_education, col = "blue")
+print("The histogram is right-skewed, and the Q-Q plot does not fall on the line. Years of education is not normally distributed. Because the number of kills is count data which could take on a value between 0 and infinity, this is likely also from a poisson distribution.")
+
+
+```
+
+# Problem 5
+Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal…
+```{r}
+#First, create a subset of 30 random survivors
+set.seed(1) #so it doesn't change every time
+randomSurvivors_30 <- zombies[sample(nrow(zombies), 30), ] #selects 30 random rows out of the dataset, and chooses those rows (which are each survivors with all of their data)
+randomSurvivors_30
+
+
+#HEIGHT (normal)
+rs30_mean_height <- mean(randomSurvivors_30$height) #calculates mean height
+rs30_sd_height <- sd(randomSurvivors_30$height) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_height <- rs30_sd_height/sqrt(30) #calculates standard error
+qnorm(0.975) #the critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30
+rs30_CIupper_height <- rs30_mean_height + (rs30_se_height*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_height <- rs30_mean_height - (rs30_se_height*qnorm(0.975)) #calculates CI lower limit
+cat("The mean height is",rs30_mean_height,". The standard deviation for height is",rs30_sd_height, ".The standard error for height is",rs30_se_height, ".The 95% confidence interval for the mean of the height is (",rs30_CIlower_height,",", rs30_CIupper_height,").")
+
+#WEIGHT (normal)
+rs30_mean_weight <- mean(randomSurvivors_30$weight)
+rs30_sd_weight <- sd(randomSurvivors_30$weight) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_weight <- rs30_sd_weight/sqrt(30) #calculates standard error
+qnorm(0.975) #the critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30
+rs30_CIupper_weight <- rs30_mean_weight + (rs30_se_weight*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_weight <- rs30_mean_weight - (rs30_se_weight*qnorm(0.975)) #calculates CI lower limit
+cat("The mean weight is",rs30_mean_weight,". The standard deviation for weight is",rs30_sd_height, ".The standard error for weight is",rs30_se_weight, ".The 95% confidence interval for the mean of the weight is (",rs30_CIlower_weight,",", rs30_CIupper_weight,").")
+
+#AGE (normal)
+rs30_mean_age <- mean(randomSurvivors_30$age)
+rs30_sd_age <- sd(randomSurvivors_30$age) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_age <- rs30_sd_age/sqrt(30) #calculates standard error
+qnorm(0.975) #the critical value for a normal distribution (which is symmetrical) when alpha is 0.05 (95% confidence) and the sample is greater than or equal to 30.
+rs30_CIupper_age <- rs30_mean_age + (rs30_se_age*qnorm(0.975)) #calculates CI upper limit
+rs30_CIlower_age <- rs30_mean_age - (rs30_se_age*qnorm(0.975)) #calculates CI lower limit
+cat("The mean age is",rs30_mean_age,". The standard deviation for age is",rs30_sd_age, ".The standard error for age is",rs30_se_age, ".The 95% confidence interval for the mean of the age is (",rs30_CIlower_age,",", rs30_CIupper_age,").")
+
+
+#ZOMBIE KILLS (non-normal)
+rs30_mean_zombies_killed <- mean(randomSurvivors_30$zombies_killed)
+rs30_sd_zombies_killed <- sd(randomSurvivors_30$zombies_killed) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_zombies_killed <- rs30_sd_zombies_killed/sqrt(30) #calculates standard error
+#because this is not normally distributed, we have to use bootstrapping to estimate a confidence interval
+setOfMeans_kills <- NULL #sets null object which we will full with simulated means
+for (i in 1:10000){
+  setOfMeans_kills[i] <- mean(sample(zombies$zombies_killed, 30, replace = F)) #creates a dataset of 10000 means, each calculated from a random sample of size 30 from our zombies dataset
+}
+rs30_CIlower_kills <- quantile(setOfMeans_kills, 0.025) #tells us the value in the set of means which 2.5% of values are lower (this is our lower bound)
+rs30_CIupper_kills <- quantile(setOfMeans_kills, 0.975) #tell us the value in the set of means which 97.5% of values are lower (this is our upper bound)
+cat("The mean number of kills is",rs30_mean_zombies_killed,". The standard deviation for number of kills is",rs30_sd_zombies_killed, ".The standard error for kills is",rs30_se_zombies_killed, ".The 95% confidence interval for the mean of the number of kills is (",rs30_CIlower_kills,",", rs30_CIupper_kills,").")
+
+
+#YEARS OF EDUCATION (non-normal)
+rs30_mean_years_of_education <- mean(randomSurvivors_30$years_of_education)
+rs30_sd_years_of_education <- sd(randomSurvivors_30$years_of_education) #calculates standard deviation (we can use sd() because this is a sample)
+rs30_se_years_of_education <- rs30_sd_years_of_education/sqrt(30) #calculates standard error
+#because this is not normally distributed, we have to use bootstrapping to estimate a confidence interval
+setOfMeans_education <- NULL #sets null object which we will full with simulated means
+for (i in 1:10000){
+  setOfMeans_education[i] <- mean(sample(zombies$years_of_education, 30, replace = F)) #creates a dataset of 10000 means, each calculated from a random sample of size 30 from our zombies dataset
+}
+rs30_CIlower_education <- quantile(setOfMeans_education, 0.025) #tells us the value in the set of means which 2.5% of values are lower (this is our lower bound)
+rs30_CIupper_education <- quantile(setOfMeans_education, 0.975) #tell us the value in the set of means which 97.5% of values are lower (this is our upper bound)
+cat("The mean years of education is",rs30_mean_years_of_education,". The standard deviation for years of education is",rs30_sd_years_of_education, ".The standard error for years of education is",rs30_se_years_of_education, ".The 95% confidence interval for the mean of years of education is (",rs30_CIlower_education,",", rs30_CIupper_education,").")
+
+```
+
+# Problem 6
+Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+```{r}
+
+#Note from matteo: this works but if I had to do this again I would create a set of 100 samples first instead of creating a new one each time.
+
+#HEIGHT
+sampleMeans_height <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_height[i] <- mean(sample(zombies$height, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_height <- mean(sampleMeans_height) #calculates mean
+sd_sampleMeans_height <- sd(sampleMeans_height) #calculates sd
+hist(sampleMeans_height) #histogram for assessing normality visually
+cat("The mean for the distribution of means of height is", mean_sampleMeans_height, ". The sd for the distribution of means of height is", sd_sampleMeans_height,". while the SE from part 5 was",rs30_se_height, ". The distribution of means for height is normally distributed.")
+
+
+#WEIGHT
+sampleMeans_weight <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_weight[i] <- mean(sample(zombies$weight, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_weight <- mean(sampleMeans_weight) #calculates mean
+sd_sampleMeans_weight <- sd(sampleMeans_weight) #calculates sd
+hist(sampleMeans_weight) #histogram for assessing normality visually
+cat("The mean for the distribution of means of weight is", mean_sampleMeans_weight, ". The sd for the distribution of means of weight is", sd_sampleMeans_weight,". while the SE from part 5 was",rs30_se_weight, ". The distribution of means for weight is approximately normally distributed.")
+
+
+#AGE
+sampleMeans_age <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_age[i] <- mean(sample(zombies$age, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_age <- mean(sampleMeans_age) #calculates mean
+sd_sampleMeans_age <- sd(sampleMeans_age) #calculates sd
+hist(sampleMeans_age) #histogram for assessing normality visually
+cat("The mean for the distribution of means of age is", mean_sampleMeans_age, ". The sd for the distribution of means of age is", sd_sampleMeans_age,". while the SE from part 5 was",rs30_se_age, ". The distribution of means for age is approximately normally distributed.")
+
+
+#ZOMBIE KILLS
+sampleMeans_kills <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_kills[i] <- mean(sample(zombies$zombies_killed, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_kills <- mean(sampleMeans_kills) #calculates mean
+sd_sampleMeans_kills <- sd(sampleMeans_kills) #calculates sd
+hist(sampleMeans_kills) #histogram for assessing normality visually
+
+cat("The mean for the distribution of means of zombie kills is", mean_sampleMeans_kills, ". The sd for the distribution of means of zombie kills is", sd_sampleMeans_kills,". while the SE from part 5 was",rs30_se_zombies_killed, ". The distribution of means for zombies killed is approximately normally distributed, even though the original distribution was not normally distributed, demonstrating the central limit theorem.")
+  
+
+#YEARS OF EDUCATION 
+sampleMeans_education <- NULL #creating dataset which will be filled
+for (i in 1:100){
+  sampleMeans_education[i] <- mean(sample(zombies$years_of_education, 30, replace = F)) #this for loop fills up sampleMeans_height with 100 mean heights calculated from samples of size 30 from the zombies dataset. 
+}
+mean_sampleMeans_education <- mean(sampleMeans_education) #calculates mean
+sd_sampleMeans_education <- sd(sampleMeans_education) #calculates sd
+hist(sampleMeans_education) #histogram for assessing normality visually
+
+cat("The mean for the distribution of means of years of education is", mean_sampleMeans_education, ". The sd for the distribution of means of years of education is", sd_sampleMeans_education,". while the SE from part 5 was",rs30_se_years_of_education, ". The distribution of means for years of education is approximately normally distributed, even though the original distribution was not normally distributed, demonstrating the central limit theorem.")
+
+
+
+```
+# Challenges
+1. In problem 5, I initially had trouble getting the sample function to work how I wanted it to. It kept saying that I was trying to take a sample larger than the dataset which didn't make sense. Eventually I figured it out with some online help. 
+2. Throughout the homework, I wanted to print out my answers to the questions after doing all the code to solve the problems, but I was having trouble concatenating strings and numerics and kept getting errors until I found the cat() function. 
+3. This is not exactly a challenge, but I don't fully understand why the module uses replacement when bootstrapping. 
+4. I'm still getting the hang of using for loops. I understand them conceptually but actually writing them can be a bit challenging. 
+5. I'm not sure of the best way of figuring what distribution a dataset fits. For problem 4, for example, knowing that zombie kills was not normal and is data that is counted made me think it was poisson, but I was not so sure for years of education. 
+
+# Alexandra Comments
+I also had a hard time with the sample function. I think we used replacement when bootstrapping to make sure that we do not end up doing a permutation, which is what I believe happens when we bootstrap without replacement. Besides what you mentioned in your fifth bullet point, you could maybe use a plot from ggplot or a histogram to physically see the distribution, so you can see what visualization fits best and match the distribution to the dataset. Honestly, I just used trial and error to do mine. 
